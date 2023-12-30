@@ -74,7 +74,7 @@ class TransactionController extends Controller
 
         $transaction->update([
             'transaction_date' => $request->transaction_date,
-            'customer_id' => $request->customer_id, 
+            'customer_id' => $request->customer_id,
         ]);
 
         return ResponseFormatter::success($transaction, 'Update Data transaction success');

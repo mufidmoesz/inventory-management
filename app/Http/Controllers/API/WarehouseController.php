@@ -10,26 +10,31 @@ use Illuminate\Validation\ValidationException;
 
 class WarehouseController extends Controller
 {
-    function all(request $request)
+    function all()
     {
         $warehouse = Warehouse::query();
 
-        if ($request->id) {
-            $warehouse = $warehouse->find($request->id);
+        // if ($request->id) {
+        //     $warehouse = $warehouse->find($request->id);
 
-            if (!$warehouse) {
-                return ResponseFormatter::error(
-                    null,
-                    'Data not found',
-                    404
-                );
-            }
+        //     if (!$warehouse) {
+        //         return ResponseFormatter::error(
+        //             null,
+        //             'Data not found',
+        //             404
+        //         );
+        //     }
 
-            return ResponseFormatter::success($warehouse, "Get warehouse by ID Successfully");
-        }
-        $warehouse = $warehouse->get();
+        //     return ResponseFormatter::success($warehouse, "Get warehouse by ID Successfully");
+        // }
+        $warehouses = $warehouse->get();
 
-        return ResponseFormatter::success($warehouse, "Get All warehouse Successfully");
+        return view('warehouse.index', compact('warehouses'));
+    }
+
+    public function create()
+    {
+        return view('warehouse.create');
     }
 
    function add(request $request)
@@ -38,14 +43,14 @@ class WarehouseController extends Controller
             $request->validate([
                 'region' => 'required',
                 'name' => 'required',
-                
+
             ]);
 
             $warehouse = Warehouse::create([
                 'region' => $request->region,
                 'name' => $request->name,
             ]);
-            return ResponseFormatter::success($warehouse, 'Create Data warehouse success');
+            return redirect('/warehouse');
         } catch (ValidationException $error) {
             return ResponseFormatter::error(
                 [
@@ -57,6 +62,13 @@ class WarehouseController extends Controller
             );
         }
     }
+
+    public function edit($id)
+    {
+        $warehouse = Warehouse::find($id);
+        return view('warehouse.edit', compact('warehouse'));
+    }
+
     public function update(Request $request)
     {
         try {
@@ -77,7 +89,7 @@ class WarehouseController extends Controller
            'region' => $request->region,
                 'name' => $request->name,]);
 
-        return ResponseFormatter::success($warehouse, 'Update Data warehouse success');
+        return redirect('/warehouse');
     } catch (ValidationException $error) {
         return ResponseFormatter::error(
             [
@@ -104,6 +116,6 @@ class WarehouseController extends Controller
 
         $warehouse->delete();
 
-        return ResponseFormatter::success(null, 'Delete Data warehouse success');
+        return redirect('/warehouse');
     }
 }

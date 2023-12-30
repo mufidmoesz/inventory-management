@@ -10,26 +10,31 @@ use Illuminate\Validation\ValidationException;
 
 class CustomerController extends Controller
 {
-    function all(request $request)
+    function all()
     {
         $customer = Customer::query();
 
-        if ($request->id) {
-            $customer = $customer->find($request->id);
+        // // if ($id) {
+        // //     $customer = $customer->find($id);
 
-            if (!$customer) {
-                return ResponseFormatter::error(
-                    null,
-                    'Data not found',
-                    404
-                );
-            }
+        // //     if (!$customer) {
+        // //         return ResponseFormatter::error(
+        // //             null,
+        // //             'Data not found',
+        // //             404
+        // //         );
+        // //     }
 
-            return ResponseFormatter::success($customer, "Get customer by ID Successfully");
-        }
-        $customer = $customer->get();
+        //     return ResponseFormatter::success($customer, "Get customer by ID Successfully");
+        // }
+        $customers = $customer->get();
 
-        return ResponseFormatter::success($customer, "Get All customer Successfully");
+        return view('customer.index', compact('customers'));
+    }
+
+    public function create()
+    {
+        return view('customer.create');
     }
 
    function add(request $request)
@@ -40,7 +45,7 @@ class CustomerController extends Controller
                 'name' => 'required',
                 'phone' => 'required',
                 'email' => 'required',
-                
+
             ]);
 
             $customer = Customer::create([
@@ -49,7 +54,7 @@ class CustomerController extends Controller
                 'phone' => $request->phone,
                 'email' => $request->email,
             ]);
-            return ResponseFormatter::success($customer, 'Create Data customer success');
+            return redirect('/customer');
         } catch (ValidationException $error) {
             return ResponseFormatter::error(
                 [
@@ -61,6 +66,22 @@ class CustomerController extends Controller
             );
         }
     }
+
+    public function edit($id)
+    {
+        $customer = Customer::find($id);
+
+        if (!$customer) {
+            return ResponseFormatter::error(
+                null,
+                'Data not found',
+                404
+            );
+        }
+
+        return view('customer.edit', compact('customer'));
+    }
+
     public function update(Request $request)
     {
         try {
@@ -79,11 +100,11 @@ class CustomerController extends Controller
 
         $customer->update([
             'name' => $request->name,
-            'address' => $request->address, 
-            'phone' => $request->phone, 
+            'address' => $request->address,
+            'phone' => $request->phone,
             'email' => $request->email]);
 
-        return ResponseFormatter::success($customer, 'Update Data customer success');
+        return redirect('/customer');
     } catch (ValidationException $error) {
         return ResponseFormatter::error(
             [
@@ -96,9 +117,9 @@ class CustomerController extends Controller
     }
     }
 
-    public function delete(Request $request)
+    public function delete($id)
     {
-        $customer = Customer::find($request->id);
+        $customer = Customer::find($id);
 
         if (!$customer) {
             return ResponseFormatter::error(
@@ -110,6 +131,6 @@ class CustomerController extends Controller
 
         $customer->delete();
 
-        return ResponseFormatter::success(null, 'Delete Data customer success');
+        return redirect('/customer');
     }
 }

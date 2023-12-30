@@ -1,0 +1,41 @@
+<x-app-layout>
+    <div class="container">
+        <h1>Add New Supplier</h1>
+        <form action="{{ route('supplier.add') }}" method="POST">
+            @csrf
+            <div class="form-group mt-4 mb-3">
+                <label for="name">Supplier Name</label>
+                <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror"
+                    value="{{ old('name') }}" placeholder="Supplier Name" aria-describedby="helpId">
+                @error('name')
+                    <small id="helpId" class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+            <div class="form-group mt-4 mb-3">
+                <label for="address">Supplier Address</label>
+                <textarea class="form-control @error('address') is-invalid @enderror" name="address" id="address"
+                    rows="3">{{ old('address') }}</textarea>
+                @error('address')
+                    <small id="helpId" class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+            <div class="form-group mt-4 mb-3">
+                <label for="description">Supplier Description</label>
+                <textarea class="form-control @error('description') is-invalid @enderror" name="description"
+                    id="description" rows="3">{{ old('description') }}</textarea>
+                @error('description')
+                    <small id="helpId" class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+            <div class="form-group mt-4 mb-3">
+                <label for="phone">Supplier Phone</label>
+                <input type="text" name="phone" id="phone" class="form-control @error('phone') is-invalid @enderror"
+                    value="{{ old('phone') }}" placeholder="Supplier Phone" aria-describedby="helpId">
+                @error('phone')
+                    <small id="helpId" class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+            <button type="submit" class="btn btn-primary">Add New Supplier</button>
+        </form>
+    </div>
+</x-app-layout>

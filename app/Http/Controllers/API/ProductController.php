@@ -5,31 +5,40 @@ namespace App\Http\Controllers\API;
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
 {
-    function all(request $request)
+    function all()
     {
         $product = Product::query();
+        $warehouse = Warehouse::query();
 
-        if ($request->id) {
-            $product = $product->find($request->id);
+        // if ($request->id) {
+        //     $product = $product->find($request->id);
 
-            if (!$product) {
-                return ResponseFormatter::error(
-                    null,
-                    'Data not found',
-                    404
-                );
-            }
+        //     if (!$product) {
+        //         return ResponseFormatter::error(
+        //             null,
+        //             'Data not found',
+        //             404
+        //         );
+        //     }
 
-            return ResponseFormatter::success($product, "Get product by ID Successfully");
-        }
-        $product = $product->get();
+        //     return ResponseFormatter::success($product, "Get product by ID Successfully");
+        // }
+        $products = $product->get();
+        $warehouses = $warehouse->get();
 
-        return ResponseFormatter::success($product, "Get All product Successfully");
+        return view('product.index', compact('products'));
+    }
+
+    public function create()
+    {
+        $warehouses = Warehouse::all();
+        return view('product.create', compact('warehouses'));
     }
 
    function add(request $request)
@@ -40,7 +49,7 @@ class ProductController extends Controller
                 'name' => 'required',
                 'stock' => 'required',
                 'price' => 'required',
-                
+
             ]);
 
             $product = Product::create([
@@ -50,7 +59,7 @@ class ProductController extends Controller
                 'price' => $request->price,
                 'description' => $request->description,
             ]);
-            return ResponseFormatter::success($product, 'Create Data product success');
+            return redirect('/product');
         } catch (ValidationException $error) {
             return ResponseFormatter::error(
                 [
@@ -62,6 +71,14 @@ class ProductController extends Controller
             );
         }
     }
+
+    public function edit($id)
+    {
+        $product = Product::find($id);
+        $warehouses = Warehouse::all();
+        return view('product.edit', compact('product', 'warehouses'));
+    }
+
     public function update(Request $request)
     {
         try {
@@ -86,7 +103,7 @@ class ProductController extends Controller
                 'description' => $request->description,
             ]);
 
-        return ResponseFormatter::success($product, 'Update Data product success');
+        return redirect('/product');
     } catch (ValidationException $error) {
         return ResponseFormatter::error(
             [
@@ -113,6 +130,6 @@ class ProductController extends Controller
 
         $product->delete();
 
-        return ResponseFormatter::success(null, 'Delete Data product success');
+        return redirect('/product');
     }
 }

@@ -10,26 +10,31 @@ use Illuminate\Validation\ValidationException;
 
 class SupplierController extends Controller
 {
-    function all(request $request)
+    function all()
     {
-        $suppliers = Supplier::query();
+        $supplier = Supplier::query();
 
-        if ($request->id) {
-            $supplier = $suppliers->find($request->id);
+        // if ($request->id) {
+        //     $supplier = $suppliers->find($request->id);
 
-            if (!$supplier) {
-                return ResponseFormatter::error(
-                    null,
-                    'Data not found',
-                    404
-                );
-            }
+        //     if (!$supplier) {
+        //         return ResponseFormatter::error(
+        //             null,
+        //             'Data not found',
+        //             404
+        //         );
+        //     }
 
-            return ResponseFormatter::success($supplier, "Get Supplier by ID Successfully");
-        }
-        $suppliers = $suppliers->get();
+        //     return ResponseFormatter::success($supplier, "Get Supplier by ID Successfully");
+        // }
+        $suppliers = $supplier->get();
 
-        return ResponseFormatter::success($suppliers, "Get All Suppliers Successfully");
+        return view('supplier.index', compact('suppliers'));
+    }
+
+    public function create()
+    {
+        return view('supplier.create');
     }
 
    function add(request $request)
@@ -39,7 +44,7 @@ class SupplierController extends Controller
                 'address' => 'required',
                 'name' => 'required',
                 'phone' => 'required',
-                
+
             ]);
 
             $supplier = Supplier::create([
@@ -48,7 +53,7 @@ class SupplierController extends Controller
                 'phone' => $request->phone,
                 'description' => $request->description,
             ]);
-            return ResponseFormatter::success($supplier, 'Create Data Supplier success');
+            return redirect('/supplier');
         } catch (ValidationException $error) {
             return ResponseFormatter::error(
                 [
@@ -60,6 +65,13 @@ class SupplierController extends Controller
             );
         }
     }
+
+    public function edit($id)
+    {
+        $supplier = Supplier::find($id);
+        return view('supplier.edit', compact('supplier'));
+    }
+
     public function update(Request $request)
     {
         try {
@@ -78,11 +90,11 @@ class SupplierController extends Controller
 
         $supplier->update([
             'name' => $request->name,
-            'address' => $request->address, 
-            'phone' => $request->phone, 
+            'address' => $request->address,
+            'phone' => $request->phone,
             'description' => $request->description]);
 
-        return ResponseFormatter::success($supplier, 'Update Data Supplier success');
+        return redirect('/supplier');
     } catch (ValidationException $error) {
         return ResponseFormatter::error(
             [
@@ -109,6 +121,6 @@ class SupplierController extends Controller
 
         $supplier->delete();
 
-        return ResponseFormatter::success(null, 'Delete Data Supplier success');
+        return redirect('/supplier');
     }
 }
